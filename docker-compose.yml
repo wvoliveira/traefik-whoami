@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  traefik:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    
+    volumes:
+      - ./conf:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/hostname:/etc/hostname:ro
+      - /etc/nsswitch.conf:/etc/nsswitch.conf:ro
+      - /etc/hosts:/etc/hosts:ro
