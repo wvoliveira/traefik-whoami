@@ -6,7 +6,15 @@ Reverse proxy to manager requests
 
 Use [mkcert](https://github.com/FiloSottile/mkcert/releases) for generate local certs and install in your system.
 
-Run following command to start traefik and 1 container for test:
+After get mkcert, run these commands to generate and install certs:
+
+```bash
+cd conf/certs/localhost
+mkcert -cert-file localhost.crt -key-file localhost.key localhost whoami.localhost betraefik.localhost api.localhost 127.0.0.1
+cd -
+```
+
+Now, run following commands to start traefik and one container for test:
 
 ```bash
 # start traefik with configurations in the conf/ path

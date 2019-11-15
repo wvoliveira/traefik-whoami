@@ -11,7 +11,11 @@ restart:
 	docker logs -f "${NAME}"
 
 run:
-	docker run --rm --name "${NAME}" -p 8080:8080 -p 80:80 -p 443:443 -p 8082:8082 \
+	docker run --rm --name "${NAME}" \
+	-p 8080:8080 \
+	-p 80:80 \
+	-p 443:443 \
+	-p 8082:8082 \
 	-v /var/run/docker.sock:/var/run/docker.sock \
 	-v "${PWD}/conf":/etc/traefik \
 	traefik:${TRAEFIK_IMAGE_VERSION}
@@ -25,5 +29,9 @@ push:
 run_whoami:
 	docker run --rm --name whoami \
 	-l traefik.enable="true" \
-	-l traefik.port="80" \
+	-l traefik.http.services.whoami.loadbalancer.server.port=80 \
+	-l traefik.http.services.whoami.loadbalancer.server.scheme=http \
+	-l traefik.http.routers.whoami.entrypoints=http,https \
+	-l traefik.http.routers.whoami.middlewares=redirect \
+	-l traefik.http.middlewares.redirect.redirectscheme.scheme=https \
 	containous/whoami:v1.4.0

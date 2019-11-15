@@ -1,3 +1,7 @@
+[http.middlewares]
+  [http.middlewares.redirect.redirectScheme]
+    scheme = "https"
+
 [[tls.certificates]]
 certFile = "/etc/traefik/certs/localhost/localhost.crt"
 keyFile = "/etc/traefik/certs/localhost/localhost.key"
