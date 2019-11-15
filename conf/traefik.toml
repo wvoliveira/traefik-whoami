@@ -1,41 +1,36 @@
-defaultEntryPoints = ["http"]
-logLevel = "INFO"
-insecureSkipVerify = true
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = true
 
-[traefikLog]
-  format   = "json"
+[providers]
+  [providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+    defaultRule = "Host(`{{ trimPrefix `/` .Name }}.localhost`)"
+    exposedByDefault = true
+  [providers.file]
+    filename = "/etc/traefik/dynamic.toml"
+
+[api]
+  insecure = true
+  dashboard = true
+  debug = true
 
 [accessLog]
   format = "json"
 
-[docker]
-endpoint = "unix:///var/run/docker.sock"
-watch = true
-swarmMode = true
-network = "traefik"
-exposedByDefault = true
-
-[api]
-entryPoint = "traefik"
-dashboard = true
-debug = false
-
-  [api.statistics]
-  recentErrors = 10
-
-[ping]
-  entryPoint = "traefik"
+[log]
+  level = "debug"
 
 [entryPoints]
   [entryPoints.http]
-  address = ":80"
-  [entryPoints.https]
-  address = ":443"
-    [entryPoints.https.tls]
-      [[entryPoints.https.tls.certificates]]
-      certFile = "/etc/traefik/certs/wildcard.<domain>.com.br.crt"
-      keyFile =  "/etc/traefik/certs/wildcard.<domain>.com.br.key"
+    address = ":80"
 
-[file]
-  directory = "/etc/traefik/rules"
-  watch = false
+  [entryPoints.https]
+    address = ":443"
+  
+  [entryPoints.metrics]
+    address = ":8082"
+
+[metrics]
+  [metrics.prometheus]
+    entryPoint = "metrics"

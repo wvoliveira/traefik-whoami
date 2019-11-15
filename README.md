@@ -1,88 +1,27 @@
-# Traefik
+# betraefik
 
-Reverse proxy to manager microservices requests
+Reverse proxy to manager requests
 
-## Test local
+## How
 
-Run: `docker-compose -f docker-compose.yml up --build`
+Use [mkcert](https://github.com/FiloSottile/mkcert/releases) for generate local certs and install in your system.
 
-Its open 80, 443 and 8080 ports in your host:
-
-- Open <http://127.0.0.1/> for requests;
-- Or <https://127.0.0.1/> for https requests;
-- Or <http://127.0.0.1:8080/> for Traefik dashboard.
-
-Copy all self signed certificates to /usr/local/share/ca-certificates/: `cp conf/certs/wildcard*crt /usr/local/share/ca-certificates/`  
-and update: `sudo update-ca-certificates`
-
-Now you can do send requests without certificates errors. Examples:
-
-Add these lines in your /etc/hosts:
+Run following command to start traefik and 1 container for test:
 
 ```bash
-127.0.0.1 <domain>.com.br
-127.0.0.1 <domain>.com.br
+# start traefik with configurations in the conf/ path
+make run
+
+# start whoami container
+make run_whoami
 ```
 
-Now send requests:
-
-```bash
-curl -vv -I https://<domain>.com.br/
-curl -vv -I https://<domain>.com.br/
-```
-
-Awesome!
-
-## To add a service in Traefik manager
-
-Create:
-
-```bash
-docker service create \
-    --name <service name> \
-    --constraint=node.role==worker \
-    --network traefik \
-    --mount type=bind,source=/var/run/nscd,target=/var/run/nscd,readonly \
-    --update-failure-action rollback \
-    --label traefik.enable=true \
-    --label traefik.port=<container port> \
-    --label traefik.docker.network=traefik \
-    --label "traefik.frontend.rule=PathPrefix:<path>" \
-    <image base>
-```
-
-Update:
-
-```bash
-docker service update \
-    --update-failure-action rollback \
-    --update-parallelism 1 \
-    --label-add traefik.enable=true \
-    --label-add traefik.port=<container port> \
-    --label-add traefik.docker.network=traefik \
-    --label-add "traefik.frontend.rule=PathPrefix:<path>" \
-    <service name>
-```
-
-Per path:
-
-```bash
-docker service update --label-add "traefik.frontend.rule=PathPrefixStrip:/pathhere" <service name>
-```
-
-Per host: `--label-add "traefik.frontend.rule=Host:somedomain.com.br"`
-
-To join both, just separate with ";": `--label-add "traefik.frontend.rule=Host:domain.com.br;PathPrefixStrip:/pathhere"`
-
-To add more one value, just insert comma: `Host:domain1.com.br,domain2.com.br`
-
-Weighted Round Robin: `--label-add "traefik.backend.loadbalancer.method=wrr"`
-
-Dynamic Round Robin: `--label-add "traefik.backend.loadbalancer.method=drr"`
-
-Force Traefik do view specific network in container: `--label-add "traefik.docker.network=traefik"`
+Go to <http://localhost:8080/dashboard/> to access traefik dashboard.  
+Go to <http://localhost:8082/metrics> to access metrics with prometheus format.  
+Go to <http://whoami.localhost/> to access whoami container response.  
 
 References:
 
-- <https://docs.traefik.io/user-guide/examples/>
-- <https://docs.traefik.io/configuration/backends/docker/>
+- <https://docs.traefik.io/user-guides/docker-compose/basic-example/>
+- <https://docs.traefik.io/observability/logs/>
+- <https://docs.traefik.io/migration/v1-to-v2/>

@@ -1,4 +1,4 @@
-FROM traefik:1.7.9-alpine
+FROM traefik:v2.0.5
 
 RUN apk add --update \
   curl \
