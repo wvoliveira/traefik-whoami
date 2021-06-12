@@ -1,4 +1,4 @@
-# betraefik
+# traefik-whoami
 
 Reverse proxy to manager requests
 
